@@ -23,6 +23,7 @@ const {
 
 router.post('/register', teacherRegister);
 router.post('/login', teacherLogIn);
+// router.post('/dashboard', teacherLogIn);
 router.get('/students', getAllStudents);
 // router.get('/instructors', getInstructor);
 

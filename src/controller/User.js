@@ -40,31 +40,37 @@ const teacherRegister = async (req, res) => {
 };
 const teacherLogIn = async (req, res) => {
     try {
-        let teacher = await User.findOne({ email: req.body.email });
-        if (teacher) {
-            const validated = await bcrypt.compare(req.body.password, teacher.password);
-            if (validated) {
-                teacher.password = undefined;
-
-// // Generate JWT
-    const token = jwt.sign(
-        { _id: teacher._id, role: teacher.role },
-       "abcd",
-        { expiresIn: "1h" }
-      );
-
+      let teacher = await User.findOne({ email: req.body.email });
+      if (teacher) {
+        const validated = await bcrypt.compare(req.body.password, teacher.password);
+        if (validated) {
+          teacher.password = undefined;
   
-              res.status(200).send({ message: "Login successful",token,role:teacher.role });
-            } else {
-                res.status(401).send({ message: "Invalid password" });
-            }
+          // Generate JWT
+          const token = jwt.sign(
+            { _id: teacher._id, role: teacher.role },
+            "abcd",
+            { expiresIn: "1h" }
+          );
+  
+          // Send response with token, role, and id
+          res.status(200).send({
+            message: "Login successful",
+            token,
+            role: teacher.role,
+            id: teacher._id,  // Include the ID in the response
+          });
         } else {
-            res.status(404).send({ message: "Email not registered" });
+          res.status(401).send({ message: "Invalid password" });
         }
+      } else {
+        res.status(404).send({ message: "Email not registered" });
+      }
     } catch (err) {
-        res.status(500).json(err);
+      res.status(500).json(err);
     }
-};
+  };
+  
 const getAllStudents = async (req, res) => {
     try {
         const students = await User.find({ role: 'Student' });
